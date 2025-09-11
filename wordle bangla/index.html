@@ -262,49 +262,34 @@
     <script>
         // ---------- WORD BANK (all 3 base-letter words) ----------
         // Each word has letters: { char: baseChar, kaar: vowelSign or null, displayInitial: placeholder (same as kaar) }
-        const words = [
-            { word: 'কাগজ', letters: [
-                { char: 'ক', kaar: 'া', displayInitial: 'া' },
-                { char: 'গ', kaar: null, displayInitial: '' },
-                { char: 'জ', kaar: null, displayInitial: '' }
-            ]},
-            { word: 'সবুজ', letters: [
-                { char: 'স', kaar: null, displayInitial: '' },
-                { char: 'ব', kaar: 'ু', displayInitial: 'ু' },
-                { char: 'জ', kaar: null, displayInitial: '' }
-            ]},
-            { word: 'কলম', letters: [
-                { char: 'ক', kaar: null, displayInitial: '' },
-                { char: 'ল', kaar: null, displayInitial: '' },
-                { char: 'ম', kaar: null, displayInitial: '' }
-            ]},
-            { word: 'কিরণ', letters: [
-                { char: 'ক', kaar: 'ি', displayInitial: 'ি' },
-                { char: 'র', kaar: null, displayInitial: '' },
-                { char: 'ণ', kaar: null, displayInitial: '' }
-            ]},
-            { word: 'বিন্দু', letters: [
-                { char: 'ব', kaar: 'ি', displayInitial: 'ি' },
-                { char: 'ন', kaar: null, displayInitial: '' },
-                { char: 'দ', kaar: 'ু', displayInitial: 'ু' }
-            ]},
-            // examples with এ-কার / ঐ-কার / ঔ-কার where possible while keeping 3 base letters:
-            { word: 'কেইট', letters: [
-                { char: 'ক', kaar: 'ে', displayInitial: 'ে' },
-                { char: 'ই', kaar: null, displayInitial: '' },
-                { char: 'ট', kaar: null, displayInitial: '' }
-            ]},
-            { word: 'কৈল', letters: [
-                { char: 'ক', kaar: 'ৈ', displayInitial: 'ৈ' },
-                { char: 'ল', kaar: null, displayInitial: '' },
-                { char: 'প', kaar: null, displayInitial: '' } // added a consonant to make 3 letters (rare but works for puzzles)
-            ]},
-            { word: 'দৌলি', letters: [
-                { char: 'দ', kaar: 'ৌ', displayInitial: 'ৌ' },
-                { char: 'ল', kaar: null, displayInitial: '' },
-                { char: 'ি', kaar: null, displayInitial: '' } // last as vowel marker as placeholder (used only for puzzle)
-            ]}
-        ];
+        // 1. List of Bangla vowel signs (কার)
+const kars = ['া','ি','ী','ু','ূ','ৃ','ে','ৈ','ো','ৌ'];
+
+// 2. Function to dissect a word into letters + kaar
+function dissectWord(word) {
+    const letters = [];
+    for (let i = 0; i < word.length; i++) {
+        const char = word[i];
+        if (kars.includes(char)) {
+            // Attach this kaar to the previous consonant
+            if (letters.length > 0) {
+                letters[letters.length - 1].kaar = char;
+                letters[letters.length - 1].displayInitial = char; // autofill
+            }
+        } else {
+            // Consonant or independent vowel
+            letters.push({ char: char, kaar: null, displayInitial: '' });
+        }
+    }
+    return { word, letters };
+}
+
+// 3. Your plain word list (easy to maintain!)
+const wordBank = ["কাগজ", "অকাল"];
+
+// 4. Automatically convert into full objects
+const words = wordBank.map(dissectWord);
+
 
         // ------- Game state -------
         let gameConfig = null;
