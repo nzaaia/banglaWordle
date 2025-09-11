@@ -10,7 +10,7 @@
 <body>
     <div class="header">
         <h1>বাংলা ওয়ার্ডল</h1>
-        <p>দুটি চেষ্টায় শব্দটি খুঁজুন</p>
+        <p>৩ টি চেষ্টায় শব্দটি খুঁজুন</p>
     </div>
 
     <div class="game-container">
@@ -73,7 +73,7 @@ async function loadWords() {
         let currentRow = 0;
         let gameOver = false;
         let letterStates = {};
-        const maxGuesses = 2; // 🔹 user requested 2 tries
+        const maxGuesses = 3; // 🔹 user requested 2 tries
 
         // Bengali keyboard layout (same as before)
         const keyboardLayout = [
