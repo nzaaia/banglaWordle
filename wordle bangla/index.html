@@ -1,0 +1,557 @@
+<!DOCTYPE html> 
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>বাংলা ওয়ার্ডল</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin: 20px 0;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 420px;
+            margin-bottom: 20px;
+        }
+
+        .guess-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .guess-row {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .letter-box {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            border: 2px solid #d3d3d3;
+            border-radius: 8px;
+            position: relative;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .letter-box.has-kaar {
+            color: #999;
+        }
+
+        .letter-box.filled {
+            animation: pop 0.3s ease;
+            color: #333 !important;
+        }
+
+        .letter-box.correct {
+            background: #6aaa64;
+            border-color: #6aaa64;
+            color: white !important;
+        }
+
+        .letter-box.present {
+            background: #c9b458;
+            border-color: #c9b458;
+            color: white !important;
+        }
+
+        .letter-box.absent {
+            background: #787c7e;
+            border-color: #787c7e;
+            color: white !important;
+        }
+
+        .letter-box.active {
+            border-color: #764ba2;
+            box-shadow: 0 0 10px rgba(118, 75, 162, 0.3);
+        }
+
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .keyboard {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+        }
+
+        .key {
+            min-width: 35px;
+            height: 45px;
+            border: none;
+            border-radius: 6px;
+            background: #e0e0e0;
+            color: #333;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 8px;
+            user-select: none;
+        }
+
+        .key:hover {
+            background: #d0d0d0;
+            transform: translateY(-2px);
+        }
+
+        .key:active {
+            transform: translateY(0);
+        }
+
+        .key.special {
+            background: #764ba2;
+            color: white;
+            min-width: 60px;
+        }
+
+        .key.special:hover {
+            background: #5e3a8a;
+        }
+
+        .key.correct {
+            background: #6aaa64;
+            color: white;
+        }
+
+        .key.present {
+            background: #c9b458;
+            color: white;
+        }
+
+        .key.absent {
+            background: #787c7e;
+            color: white;
+        }
+
+        .message {
+            text-align: center;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            font-weight: bold;
+            animation: slideIn 0.3s ease;
+        }
+
+        .message.success {
+            background: #6aaa64;
+            color: white;
+        }
+
+        .message.error {
+            background: #f44336;
+            color: white;
+        }
+
+        .message.warning {
+            background: #ff9800;
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stats {
+            text-align: center;
+            margin-top: 10px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Play again button */
+        #playAgain {
+            display: none;
+            margin: 10px auto 0;
+            padding: 8px 14px;
+            background: #764ba2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+        #playAgain:hover { background: #5e3a8a; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>বাংলা ওয়ার্ডল</h1>
+        <p>দুটি চেষ্টায় শব্দটি খুঁজুন</p>
+    </div>
+
+    <div class="game-container">
+        <div id="message"></div>
+        <div class="guess-container" id="guessContainer"></div>
+        <div class="stats">
+            <span id="attemptsLeft">চেষ্টা বাকি: 2</span>
+        </div>
+        <button id="playAgain" onclick="startNewGame()">Play again</button>
+    </div>
+
+    <div class="keyboard" id="keyboard">
+        <!-- Keyboard generated by JS -->
+    </div>
+
+    <script>
+        // ---------- WORD BANK (all 3 base-letter words) ----------
+        // Each word has letters: { char: baseChar, kaar: vowelSign or null, displayInitial: placeholder (same as kaar) }
+        const words = [
+            { word: 'কাগজ', letters: [
+                { char: 'ক', kaar: 'া', displayInitial: 'া' },
+                { char: 'গ', kaar: null, displayInitial: '' },
+                { char: 'জ', kaar: null, displayInitial: '' }
+            ]},
+            { word: 'সবুজ', letters: [
+                { char: 'স', kaar: null, displayInitial: '' },
+                { char: 'ব', kaar: 'ু', displayInitial: 'ু' },
+                { char: 'জ', kaar: null, displayInitial: '' }
+            ]},
+            { word: 'কলম', letters: [
+                { char: 'ক', kaar: null, displayInitial: '' },
+                { char: 'ল', kaar: null, displayInitial: '' },
+                { char: 'ম', kaar: null, displayInitial: '' }
+            ]},
+            { word: 'কিরণ', letters: [
+                { char: 'ক', kaar: 'ি', displayInitial: 'ি' },
+                { char: 'র', kaar: null, displayInitial: '' },
+                { char: 'ণ', kaar: null, displayInitial: '' }
+            ]},
+            { word: 'বিন্দু', letters: [
+                { char: 'ব', kaar: 'ি', displayInitial: 'ি' },
+                { char: 'ন', kaar: null, displayInitial: '' },
+                { char: 'দ', kaar: 'ু', displayInitial: 'ু' }
+            ]},
+            // examples with এ-কার / ঐ-কার / ঔ-কার where possible while keeping 3 base letters:
+            { word: 'কেইট', letters: [
+                { char: 'ক', kaar: 'ে', displayInitial: 'ে' },
+                { char: 'ই', kaar: null, displayInitial: '' },
+                { char: 'ট', kaar: null, displayInitial: '' }
+            ]},
+            { word: 'কৈল', letters: [
+                { char: 'ক', kaar: 'ৈ', displayInitial: 'ৈ' },
+                { char: 'ল', kaar: null, displayInitial: '' },
+                { char: 'প', kaar: null, displayInitial: '' } // added a consonant to make 3 letters (rare but works for puzzles)
+            ]},
+            { word: 'দৌলি', letters: [
+                { char: 'দ', kaar: 'ৌ', displayInitial: 'ৌ' },
+                { char: 'ল', kaar: null, displayInitial: '' },
+                { char: 'ি', kaar: null, displayInitial: '' } // last as vowel marker as placeholder (used only for puzzle)
+            ]}
+        ];
+
+        // ------- Game state -------
+        let gameConfig = null;
+        let currentGuess = [];
+        let currentRow = 0;
+        let gameOver = false;
+        let letterStates = {};
+        const maxGuesses = 2; // 🔹 user requested 2 tries
+
+        // Bengali keyboard layout (same as before)
+        const keyboardLayout = [
+            ['অ', 'আ', 'ই', 'ঈ', 'উ', 'ঊ', 'ঋ', 'এ', 'ঐ', 'ও', 'ঔ'],
+            ['ক', 'খ', 'গ', 'ঘ', 'ঙ', 'চ', 'ছ', 'জ', 'ঝ', 'ঞ'],
+            ['ট', 'ঠ', 'ড', 'ঢ', 'ণ', 'ত', 'থ', 'দ', 'ধ', 'ন'],
+            ['প', 'ফ', 'ব', 'ভ', 'ম', 'য', 'র', 'ল', 'শ', 'ষ'],
+            ['স', 'হ', 'ড়', 'ঢ়', 'য়', 'ৎ', 'ং', 'ঃ', 'ঁ']
+        ];
+
+        // ---------- Initialize / Start ----------
+        function startNewGame() {
+            // pick a random word
+            const randomIndex = Math.floor(Math.random() * words.length);
+            // deep copy to avoid accidental mutation
+            const chosen = JSON.parse(JSON.stringify(words[randomIndex]));
+            gameConfig = { ...chosen, maxGuesses };
+            currentGuess = [];
+            currentRow = 0;
+            gameOver = false;
+            letterStates = {};
+            document.getElementById('message').textContent = '';
+            document.getElementById('playAgain').style.display = 'none';
+            createGuessGrid();
+            createKeyboard();
+            updateDisplay();
+        }
+
+        function createGuessGrid() {
+            const container = document.getElementById('guessContainer');
+            container.innerHTML = '';
+
+            for (let r = 0; r < gameConfig.maxGuesses; r++) {
+                const row = document.createElement('div');
+                row.className = 'guess-row';
+                row.id = `row-${r}`;
+
+                gameConfig.letters.forEach((letter, j) => {
+                    const box = document.createElement('div');
+                    box.className = 'letter-box';
+                    if (letter.kaar) {
+                        box.classList.add('has-kaar');
+                    }
+                    box.id = `box-${r}-${j}`;
+
+                    // Show kaar placeholder initially on every row (so player sees structure)
+                    if (letter.displayInitial) {
+                        box.textContent = letter.displayInitial;
+                    } else {
+                        box.textContent = '';
+                    }
+
+                    row.appendChild(box);
+                });
+
+                container.appendChild(row);
+            }
+        }
+
+        function createKeyboard() {
+            const keyboard = document.getElementById('keyboard');
+            keyboard.innerHTML = '';
+
+            keyboardLayout.forEach(row => {
+                const keyRow = document.createElement('div');
+                keyRow.className = 'keyboard-row';
+
+                row.forEach(letter => {
+                    const key = document.createElement('button');
+                    key.className = 'key';
+                    key.textContent = letter;
+                    key.onclick = () => handleLetterInput(letter);
+                    key.id = `key-${letter}`;
+                    keyRow.appendChild(key);
+                });
+
+                keyboard.appendChild(keyRow);
+            });
+
+            // Add special keys row
+            const specialRow = document.createElement('div');
+            specialRow.className = 'keyboard-row';
+
+            const enterKey = document.createElement('button');
+            enterKey.className = 'key special';
+            enterKey.textContent = 'জমা দিন';
+            enterKey.onclick = handleSubmit;
+            specialRow.appendChild(enterKey);
+
+            const backspaceKey = document.createElement('button');
+            backspaceKey.className = 'key special';
+            backspaceKey.textContent = 'মুছুন';
+            backspaceKey.onclick = handleBackspace;
+            specialRow.appendChild(backspaceKey);
+
+            keyboard.appendChild(specialRow);
+        }
+
+        function handleLetterInput(letter) {
+            if (gameOver) return;
+            if (currentGuess.length >= gameConfig.letters.length) return;
+            currentGuess.push(letter);
+            updateDisplay();
+        }
+
+        function handleBackspace() {
+            if (gameOver) return;
+            if (currentGuess.length > 0) {
+                currentGuess.pop();
+                updateDisplay();
+            }
+        }
+
+        function handleSubmit() {
+            if (gameOver) return;
+            if (currentGuess.length !== gameConfig.letters.length) {
+                showMessage('সব অক্ষর পূরণ করুন!', 'warning');
+                return;
+            }
+            evaluateGuess();
+            if (!gameOver) {
+                currentRow++;
+                currentGuess = [];
+                updateDisplay();
+            }
+        }
+
+        // ---------- Display logic ----------
+        function updateDisplay() {
+            // update only current row boxes (and attempts)
+            gameConfig.letters.forEach((letter, i) => {
+                const box = document.getElementById(`box-${currentRow}-${i}`);
+                if (!box) return;
+
+                box.classList.remove('active', 'filled');
+
+                if (i < currentGuess.length) {
+                    const typedLetter = currentGuess[i];
+
+                    // 🔹 IMPORTANT FIX:
+                    // Always put base consonant first and then the kaar (if exists).
+                    // Logical order: consonant + vowel-sign (this renders correctly for left-side kars).
+                    if (letter.kaar) {
+                        box.textContent = typedLetter + letter.kaar;
+                    } else {
+                        box.textContent = typedLetter;
+                    }
+
+                    box.classList.add('filled');
+                    box.classList.remove('has-kaar'); // placeholder removed when typed
+                } else if (i === currentGuess.length) {
+                    // active box shows placeholder kaar if present
+                    box.classList.add('active');
+                    if (letter.displayInitial) {
+                        box.textContent = letter.displayInitial;
+                        box.classList.add('has-kaar');
+                    } else {
+                        box.textContent = '';
+                    }
+                } else {
+                    // future/unfilled boxes show placeholder if exists
+                    if (letter.displayInitial) {
+                        box.textContent = letter.displayInitial;
+                        box.classList.add('has-kaar');
+                    } else {
+                        box.textContent = '';
+                    }
+                }
+            });
+
+            // update attempts left
+            document.getElementById('attemptsLeft').textContent =
+                `চেষ্টা বাকি: ${gameConfig.maxGuesses - currentRow}`;
+        }
+
+        // ---------- Evaluation ----------
+        function evaluateGuess() {
+            const targetLetters = gameConfig.letters.map(l => l.char);
+
+            gameConfig.letters.forEach((letter, i) => {
+                const box = document.getElementById(`box-${currentRow}-${i}`);
+                const guessLetter = currentGuess[i];
+                const targetLetter = targetLetters[i];
+
+                let state = 'absent';
+                if (guessLetter === targetLetter) {
+                    state = 'correct';
+                } else if (targetLetters.includes(guessLetter)) {
+                    state = 'present';
+                }
+
+                box.classList.add(state);
+
+                // update keyboard state (preserve best state)
+                const key = document.getElementById(`key-${guessLetter}`);
+                if (key) {
+                    if (!letterStates[guessLetter] ||
+                        (letterStates[guessLetter] === 'absent' && state !== 'absent') ||
+                        (letterStates[guessLetter] === 'present' && state === 'correct')) {
+                        letterStates[guessLetter] = state;
+                        key.classList.remove('correct', 'present', 'absent');
+                        key.classList.add(state);
+                    }
+                }
+            });
+
+            // check win / lose
+            if (currentGuess.join('') === targetLetters.join('')) {
+                gameOver = true;
+                showMessage('অভিনন্দন! আপনি জিতেছেন! 🎉', 'success');
+                // show play again button
+                showPlayAgain();
+            } else if (currentRow === gameConfig.maxGuesses - 1) {
+                gameOver = true;
+                showMessage(`শব্দটি ছিল: ${gameConfig.word}`, 'error');
+                showPlayAgain();
+            }
+        }
+
+        // ---------- Helpers ----------
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
+            setTimeout(() => {
+                messageEl.textContent = '';
+                messageEl.className = '';
+            }, 3000);
+        }
+
+        function showPlayAgain() {
+            // Reveal the Play again button and also disable keyboard (so user can't keep typing)
+            document.getElementById('playAgain').style.display = 'inline-block';
+            // Disable keyboard keys visually: we'll keep click handlers but set gameOver true
+            // (gameOver already set true in evaluateGuess)
+        }
+
+        // initialize first game
+        startNewGame();
+    </script>
+</body>
+</html>
