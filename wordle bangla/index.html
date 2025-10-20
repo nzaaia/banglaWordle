@@ -54,10 +54,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             padding: 10px;
             color: var(--text-primary);
             transition: all 0.3s ease;
+            overflow-x: hidden;
         }
 
         .theme-toggle {
@@ -76,6 +76,7 @@
             font-size: 18px;
             color: white;
             transition: all 0.3s ease;
+            z-index: 10;
         }
 
         .theme-toggle:hover {
@@ -115,12 +116,14 @@
             flex-direction: column;
             gap: 8px;
             margin-bottom: 15px;
+            max-width: auto;
         }
 
         .guess-row {
             display: flex;
             justify-content: center;
             gap: 6px;
+            
         }
 
         .letter-box {
@@ -182,7 +185,7 @@
             padding: 10px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             width: 100%;
-            max-width: 500px;
+            max-width: 400px;
             transition: all 0.3s ease;
         }
 
@@ -191,12 +194,11 @@
             justify-content: center;
             gap: 4px;
             margin-bottom: 6px;
-            flex-wrap: wrap;
         }
 
         .key {
-            min-width: 30px;
-            height: 45px;
+            width: 40px; /* Fixed width for all keys */
+            height: 45px; /* Fixed height for all keys */
             border: none;
             border-radius: 6px;
             background: var(--key-bg);
@@ -208,10 +210,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0 8px;
             user-select: none;
-            flex: 1;
-            max-width: 40px;
         }
 
         .key:hover {
@@ -226,9 +225,7 @@
         .key.special {
             background: var(--bg-tertiary);
             color: white;
-            min-width: 60px;
-            flex: 1.5;
-            max-width: 80px;
+            width: 75px; /* Slightly wider for special keys but same height */
         }
 
         .key.special:hover {
@@ -313,24 +310,24 @@
             filter: brightness(1.1);
         }
 
-        /* Media query for mobile devices */
+        /* Dynamic scaling for mobile */
         @media (max-width: 480px) {
+            body {
+                padding: 5px;
+                justify-content: flex-start;
+                min-height: 100vh;
+                overflow-y: auto;
+            }
+            
+            .game-container {
+                padding: 10px;
+                margin-bottom: 8px;
+                /* max-width: 40vw; */
+            }
+            
             .keyboard {
                 padding: 8px;
-            }
-            
-            .key {
-                height: 40px;
-                font-size: 13px;
-                min-width: 25px;
-                max-width: 35px;
-                padding: 0 5px;
-            }
-            
-            .key.special {
-                min-width: 50px;
-                max-width: 70px;
-                font-size: 12px;
+                max-width: 95vw;
             }
             
             .letter-box {
@@ -339,30 +336,124 @@
                 font-size: 18px;
             }
             
-            .game-container {
-                padding: 10px;
-            }
-        }
-
-        /* Media query for very small screens */
-        @media (max-width: 380px) {
             .key {
-                height: 38px;
-                font-size: 12px;
-                min-width: 22px;
-                max-width: 32px;
+                width: 32px; /* Smaller but uniform on mobile */
+                height: 40px;
+                font-size: 13px;
             }
             
             .key.special {
-                min-width: 45px;
-                max-width: 65px;
+                width: 55px; /* Smaller but uniform on mobile */
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .letter-box {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
+            
+            .key {
+                width: 28px;
+                height: 38px;
+                font-size: 12px;
+            }
+            
+            .key.special {
+                width: 48px;
                 font-size: 11px;
+            }
+            
+            .header h1 {
+                font-size: 1.3em;
+            }
+        }
+
+        @media (max-width: 320px) {
+            .letter-box {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+            }
+            
+            .key {
+                width: 25px;
+                height: 35px;
+                font-size: 11px;
+            }
+            
+            .key.special {
+                width: 42px;
+                font-size: 10px;
+            }
+            
+            .game-container {
+                padding: 8px;
+            }
+        }
+
+        /* Very small height devices */
+        @media (max-height: 700px) {
+            .header {
+                margin-bottom: 5px;
+            }
+            
+            .header h1 {
+                font-size: 1.3em;
+            }
+            
+            .game-container {
+                padding: 10px;
+                margin-bottom: 5px;
+            }
+            
+            .guess-container {
+                gap: 5px;
+                margin-bottom: 10px;
             }
             
             .letter-box {
                 width: 35px;
                 height: 35px;
                 font-size: 16px;
+            }
+            
+            .keyboard {
+                padding: 5px;
+            }
+            
+            .key {
+                width: 28px;
+                height: 35px;
+                font-size: 12px;
+            }
+            
+            .key.special {
+                width: 48px;
+            }
+        }
+
+        @media (max-height: 600px) {
+            .letter-box {
+                width: 30px;
+                height: 30px;
+                font-size: 14px;
+            }
+            
+            .key {
+                width: 25px;
+                height: 32px;
+                font-size: 11px;
+            }
+            
+            .key.special {
+                width: 42px;
+            }
+            
+            .guess-container {
+                gap: 3px;
             }
         }
     </style>
@@ -443,22 +534,16 @@
         // Load words from words.json
         async function loadWords() {
             try {
-                // For demo purposes, using a sample word list
-                // In a real implementation, you would fetch from words.json
-                const sampleWords = ["কলম", "বই", "ঘর", "ফুল", "নদী", "মাঠ", "গাছ", "পানি"];
-                words = sampleWords.map(dissectWord);
-                
-                // Uncomment the following lines if you have a words.json file:
-                /*
                 const response = await fetch('words.json');
                 const data = await response.json();
-                words = data.words.map(dissectWord);
-                */
+                words = data.words.map(dissectWord); // dissect each word into letters + kaar
+                console.log("Loaded words:", words.length);
             } catch (err) {
-                console.error("Failed to load words", err);
-                // Use sample words as fallback
-                const sampleWords = ["কলম", "বই", "ঘর", "ফুল", "নদী", "মাঠ", "গাছ", "পানি"];
+                console.error("Failed to load words.json", err);
+                // Fallback to sample words if JSON fails
+                const sampleWords = ["কলম", "বই", "ঘর", "ফুল", "নদী", "মাঠ", "গাছ", "পানি", "বাগান", "মেঘ", "সূর্য", "চাঁদ", "তারকা", "ফল", "সবজি", "মাছ", "পাখি", "গরু", "বিড়াল", "কুকুর"];
                 words = sampleWords.map(dissectWord);
+                console.log("Using fallback words:", words.length);
             }
         }
 
@@ -492,7 +577,9 @@
             
             if (availableWords.length === 0) {
                 showMessage('দয়া করে নতুন শব্দের জন্য অপেক্ষা করুন', 'warning');
-                return;
+                // Reset used words if all words have been used
+                usedWords = [];
+                availableWords = words;
             }
             
             const randomIndex = Math.floor(Math.random() * availableWords.length);
@@ -732,6 +819,14 @@
                 return;
             }
             startNewGame();
+        });
+
+        // Handle window resize for better mobile experience
+        window.addEventListener('resize', function() {
+            // Force reflow to ensure proper scaling
+            document.body.style.display = 'none';
+            document.body.offsetHeight; // Trigger reflow
+            document.body.style.display = 'flex';
         });
     </script>
 </body>
