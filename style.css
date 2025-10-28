@@ -5,17 +5,17 @@
         }
 
         :root {
-            --bg-primary: linear-gradient(135deg, #010102 0%, #2e1932 100%);
+            --bg-primary: linear-gradient(135deg, #0c0d21 0%, #251932 100%);
             --bg-secondary: #0c0d21;
-            --bg-tertiary: #23425D;
+            --bg-tertiary: #131533;
             --text-primary: #fffbfb;
             --text-secondary: #ffffff;
             --letter-bg:#1A1C46;
             --letter-border: #ccc;
-            --key-bg: #1A1C46;
+            --key-bg: #493780;
             --key-hover: #282B6B;
-            --correct: #4caf50;
-            --present: #ff9800;
+            --correct: #378049;
+            --present: #ad751b;
             --absent: #9e9e9e;
             --active-border: #7e57c2;
             --message-bg: #254865;
@@ -218,6 +218,7 @@
         .key.special {
             background: var(--bg-tertiary);
             color: white;
+            border: #282B6B 2px solid;
             width: 75px; /* Slightly wider for special keys but same height */
         }
 
@@ -290,9 +291,9 @@
             display: none;
             margin: 8px auto 0;
             padding: 6px 12px;
-            background: var(--active-border);
+            background:#131533;
             color: white;
-            border: none;
+            border: 2px solid #282b6b;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 700;
